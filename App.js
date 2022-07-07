@@ -25,7 +25,9 @@ export default class App extends React.Component {
   componentDidMount() {
     console.log('CAN ACCESS STATE', this.state);
     this.initalMessage();
-    this.getLocation();
+    this.getLocation().then(res => {
+      console.log("address", res);
+    });
   }
 
   render() {
@@ -217,24 +219,27 @@ export default class App extends React.Component {
   }
 
   getLocation = () => {
-    this.requestLocationPermission().then((locationPermissinon) => {
-      if (locationPermissinon) {
-        Geolocation.getCurrentPosition(
-            (position) => {
-              console.log("POSITION", position);
-              this.reverseGeocode(position.coords.latitude, position.coords.longitude).then(addresses => {
-                console.log("ADDRESS RESULTS:", JSON.stringify(addresses));
-                return addresses;
-              });
-            },
-            (error) => {
-              console.log(error.code, error.message);
-            },
-            { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000, accuracy: {android: "high", ios: "best" } }
-        );
-      } else {
-        return null;
-      }
+    return new Promise(resolve => {
+      this.requestLocationPermission().then((locationPermissinon) => {
+        if (locationPermissinon) {
+          Geolocation.getCurrentPosition(
+              (position) => {
+                // console.log("POSITION", position);
+                this.reverseGeocode(position.coords.latitude, position.coords.longitude).then(addresses => {
+                  // console.log("ADDRESS RESULTS:", JSON.stringify(addresses));
+                  resolve(addresses);
+                });
+              },
+              (error) => {
+                console.log(error.code, error.message);
+                resolve(null);
+              },
+              { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000, accuracy: {android: "high", ios: "best" } }
+          );
+        } else {
+          resolve(null);
+        }
+      })
     })
   }
 }
