@@ -145,7 +145,7 @@ export default class App extends React.Component {
 
   parseAddresses = (addressResults) => {
     const appendAddressLine = (exsitingPart, newPart) => {
-      if (!exsitingPart.lenght) return newPart;
+      if (!exsitingPart.length) return newPart;
       return exsitingPart + " " + newPart;
     };
 
